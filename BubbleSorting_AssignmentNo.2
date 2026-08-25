@@ -1,0 +1,54 @@
+// Create a Java program that implements the Selection Sort algorithm.
+// Your program should:
+// 1. Create an integer array.
+// 2. Display the original/unsorted array.
+// 3. Sort the array using Selection Sort.
+// 4. Display the sorted array.
+// Example
+// Input:
+// 64 25 12 22 11
+// Output:
+// 11 12 22 25 64
+// -------------------------------------------------
+
+public class bubbleSort {
+    public static void main(String[] args) {
+        int[] arr = {5, 1, 4, 2, 8};
+
+        //for display the original array
+        System.out.print("Original array: ");
+        for (int num : arr) {
+            System.out.print(num + " ");
+        }
+
+        //Bubble Sort
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = 0; j < arr.length - 1 - i; j++) {
+                // Comparing two indexes
+                if (arr[j] > arr[j + 1]) {
+                    // Swap the elements
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+
+        //for display the sorted array
+        System.out.print("\nSorted array: ");
+        for (int num : arr) {
+            System.out.print(num + " ");
+        }
+    }
+}
+
+// -------------------------------------------------
+// Output:
+// Original array: 5 1 4 2 8
+// Sorted array: 1 2 4 5 8 
+
+
+
+
+
+
