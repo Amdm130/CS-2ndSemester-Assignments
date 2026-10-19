@@ -1,0 +1,186 @@
+Object 7. Create the object of Graduate Student to demonstrate multilevel inheritance through Person → Student → GraduateStudent. May also create objects of Person and Student, but they cannot access the methods defined only in their lower-level child classes. 
+
+class Person {
+    private String name;
+    private int age;
+
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    String getName() {
+        return name;
+    }
+
+    int getAge() {
+        return age;
+    }
+
+    void displayPerson() {
+        System.out.println("Name : " + name);
+        System.out.println("Age  : " + age);
+    }
+}
+
+class Student extends Person {
+    private int rollNo;
+    private String course;
+    private double cgpa;
+
+    Student(String name, int age, int rollNo, String course, double cgpa) {
+        super(name, age);
+        this.rollNo = rollNo;
+        this.course = course;
+        this.cgpa = cgpa;
+    }
+
+    int getRollNo() {
+        return rollNo;
+    }
+
+    String getCourse() {
+        return course;
+    }
+
+    double getCgpa() {
+        return cgpa;
+    }
+
+    void displayStudent() {
+        displayPerson();
+        System.out.println("Roll No: " + rollNo);
+        System.out.println("Course : " + course);
+        System.out.println("CGPA   : " + cgpa);
+    }
+}
+
+class GraduateStudent extends Student {
+    private String thesisTitle;
+    private String supervisor;
+    private int publishedPapers;
+
+    GraduateStudent(String name, int age, int rollNo, String course, double cgpa,
+                    String thesisTitle, String supervisor, int publishedPapers) {
+        super(name, age, rollNo, course, cgpa);
+        this.thesisTitle = thesisTitle;
+        this.supervisor = supervisor;
+        this.publishedPapers = publishedPapers;
+    }
+
+    String getThesisTitle() {
+        return thesisTitle;
+    }
+
+    String getSupervisor() {
+        return supervisor;
+    }
+
+    int getPublishedPapers() {
+        return publishedPapers;
+    }
+
+    void displayGraduate() {
+        displayStudent();
+        System.out.println("Thesis    : " + thesisTitle);
+        System.out.println("Supervisor: " + supervisor);
+        System.out.println("Papers    : " + publishedPapers);
+    }
+}
+public class MultilevelInheritance {
+
+    public static void main(String[] args) {
+
+        System.out.println("==============================================");
+        System.out.println("  MULTILEVEL INHERITANCE ");
+        System.out.println("  Person -> Student -> GraduateStudent");
+        System.out.println("==============================================");
+
+        // Object of Person (Level 1)
+        Person person = new Person("Usman", 45);
+
+        // Object of Student (Level 2)
+        Student student = new Student("Zainab", 20, 301, "BSCS", 8.50);
+
+        // Object of GraduateStudent (Level 3)
+        GraduateStudent gradStudent = new GraduateStudent(
+                "Ahmed", 26, 501, "MS Computer Science", 9.20,
+                "AI in Healthcare", "Dr. Fatima", 5
+        );
+
+        // --- Person Object ---
+        System.out.println("\n--- Person Object ---");
+        person.displayPerson();
+        // person.displayStudent();   // ERROR: Person cannot access Student method
+        // person.displayGraduate();  // ERROR: Person cannot access GraduateStudent method
+        System.out.println("(Cannot call displayStudent() or displayGraduate())");
+
+        // --- Student Object ---
+        System.out.println("\n--- Student Object ---");
+        student.displayStudent();
+        // student.displayGraduate(); // ERROR: Student cannot access GraduateStudent method
+        System.out.println("(Cannot call displayGraduate())");
+
+        // --- GraduateStudent Object ---
+        System.out.println("\n--- GraduateStudent Object ---");
+        gradStudent.displayGraduate();
+        System.out.println("(Can access ALL methods from Person, Student and GraduateStudent)");
+
+        // --- Demonstrating GraduateStudent accessing all levels ---
+        System.out.println("\n--- GraduateStudent Accessing All Levels ---");
+        System.out.println("From Person  -> getName()  : " + gradStudent.getName());
+        System.out.println("From Person  -> getAge()   : " + gradStudent.getAge());
+        System.out.println("From Student -> getRollNo(): " + gradStudent.getRollNo());
+        System.out.println("From Student -> getCourse(): " + gradStudent.getCourse());
+        System.out.println("From Student -> getCgpa()  : " + gradStudent.getCgpa());
+        System.out.println("From Grad    -> getThesis(): " + gradStudent.getThesisTitle());
+        System.out.println("From Grad    -> getSupervisor(): " + gradStudent.getSupervisor());
+        System.out.println("From Grad    -> getPapers(): " + gradStudent.getPublishedPapers());
+
+        System.out.println("\n==============================================");
+    }
+}
+
+
+OUTPUT:
+
+==============================================
+  MULTILEVEL INHERITANCE
+  Person -> Student -> GraduateStudent
+==============================================
+
+--- Person Object ---
+Name : Usman
+Age  : 45
+(Cannot call displayStudent() or displayGraduate())
+
+--- Student Object ---
+Name : Zainab
+Age  : 20
+Roll No: 301
+Course : BSCS
+CGPA   : 8.5
+(Cannot call displayGraduate())
+
+--- GraduateStudent Object ---
+Name : Ahmed
+Age  : 26
+Roll No: 501
+Course : MS Computer Science
+CGPA   : 9.2
+Thesis    : AI in Healthcare
+Supervisor: Dr. Fatima
+Papers    : 5
+(Can access ALL methods from Person, Student and GraduateStudent)
+
+--- GraduateStudent Accessing All Levels ---
+From Person  -> getName()  : Ahmed
+From Person  -> getAge()   : 26
+From Student -> getRollNo(): 501
+From Student -> getCourse(): MS Computer Science
+From Student -> getCgpa()  : 9.2
+From Grad    -> getThesis(): AI in Healthcare
+From Grad    -> getSupervisor(): Dr. Fatima
+From Grad    -> getPapers(): 5
+
+==============================================
