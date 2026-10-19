@@ -1,0 +1,98 @@
+Object #2. Write a Java program that uses Linear Search to search a particular record for any one the following names of records. Data may be assumed by user.
+- Student records
+- Employee records 
+- Book list
+- Product list
+
+PROGRAM:
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class StudentLinearSearch {
+    static class Student {
+        int rollNo;
+        String name;
+        String branch;
+        int age;
+        double cgpa;
+
+        Student(int rollNo, String name, String branch, int age, double cgpa) {
+            this.rollNo = rollNo;
+            this.name = name;
+            this.branch = branch;
+            this.age = age;
+            this.cgpa = cgpa;
+        }
+    }
+
+    static int linearSearch(List<Student> list, int rollNo) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).rollNo == rollNo) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        List<Student> students = new ArrayList<>();
+        students.add(new Student(101, "Ahmed",   "CSE", 20, 8.75));
+        students.add(new Student(102, "Fatima",  "ECE", 21, 9.10));
+        students.add(new Student(103, "Hassan",  "ME",  22, 7.50));
+        students.add(new Student(104, "Ayesha",  "CSE", 20, 9.45));
+        students.add(new Student(105, "Bilal",   "CE",  23, 6.80));
+        students.add(new Student(106, "Zainab",  "ECE", 21, 8.30));
+        students.add(new Student(107, "Usman",   "ME",  22, 7.90));
+        students.add(new Student(108, "Mariam",  "CSE", 20, 8.60));
+        students.add(new Student(109, "Hamza",   "IT",  21, 7.20));
+        students.add(new Student(110, "Sana",    "IT",  19, 9.00));
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("--- Student Records ---");
+        System.out.printf("%-8s %-10s %-8s %-5s %-6s%n", "RollNo", "Name", "Branch", "Age", "CGPA");
+        for (Student s : students) {
+            System.out.printf("%-8d %-10s %-8s %-5d %-6.2f%n", s.rollNo, s.name, s.branch, s.age, s.cgpa);
+        }
+
+        System.out.print("\nEnter Roll Number to search: ");
+        int rollNo = scanner.nextInt();
+
+        int index = linearSearch(students, rollNo);
+        if (index != -1) {
+            Student s = students.get(index);
+            System.out.println("\nRecord Found at index " + index);
+            System.out.printf("Roll No: %d\nName: %s\nBranch: %s\nAge: %d\nCGPA: %.2f%n",
+                    s.rollNo, s.name, s.branch, s.age, s.cgpa);
+        } else {
+            System.out.println("Record Not Found.");
+        }
+
+        scanner.close();
+    }
+}
+
+OUTPUT:
+--- Student Records ---
+RollNo   Name       Branch   Age   CGPA  
+101      Ahmed      CSE      20    8.75  
+102      Fatima     ECE      21    9.10  
+103      Hassan     ME       22    7.50  
+104      Ayesha     CSE      20    9.45  
+105      Bilal      CE       23    6.80  
+106      Zainab     ECE      21    8.30  
+107      Usman      ME       22    7.90  
+108      Mariam     CSE      20    8.60  
+109      Hamza      IT       21    7.20  
+110      Sana       IT       19    9.00  
+
+Enter Roll Number to search: 101
+
+Record Found at index 0
+Roll No: 101
+Name: Ahmed
+Branch: CSE
+Age: 20
+CGPA: 8.75
+
+
