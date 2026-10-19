@@ -1,0 +1,91 @@
+Object #3. Selection Sort of library books arranged books by accession number 
+
+PROGRAM:
+import java.util.ArrayList;
+import java.util.List;
+
+public class LibrarySelectionSort {
+
+    static class Book {
+        int accessionNo;
+        String title;
+        String author;
+        int year;
+
+        Book(int accessionNo, String title, String author, int year) {
+            this.accessionNo = accessionNo;
+            this.title = title;
+            this.author = author;
+            this.year = year;
+        }
+    }
+
+    static void selectionSort(List<Book> books) {
+        int n = books.size();
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++) {
+                if (books.get(j).accessionNo < books.get(minIndex).accessionNo) {
+                    minIndex = j;
+                }
+            }
+            // Swap
+            Book temp = books.get(i);
+            books.set(i, books.get(minIndex));
+            books.set(minIndex, temp);
+        }
+    }
+
+    static void displayBooks(List<Book> books) {
+        System.out.printf("%-12s %-30s %-20s %-6s%n", "AccessionNo", "Title", "Author", "Year");
+        for (Book b : books) {
+            System.out.printf("%-12d %-30s %-20s %-6d%n", b.accessionNo, b.title, b.author, b.year);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        List<Book> books = new ArrayList<>();
+        books.add(new Book(508, "Data Structures",       "Hamza",    2019));
+        books.add(new Book(203, "Java Programming",      "Fatima",   2020));
+        books.add(new Book(715, "Operating Systems",     "Ahmed",    2018));
+        books.add(new Book(102, "Database Systems",      "Ayesha",   2021));
+        books.add(new Book(410, "Computer Networks",     "Bilal",    2017));
+        books.add(new Book(601, "Software Engineering",  "Zainab",   2022));
+        books.add(new Book(307, "Digital Logic",         "Usman",    2016));
+        books.add(new Book(150, "Discrete Mathematics",  "Mariam",   2023));
+
+        System.out.println("--- Before Sorting ---");
+        displayBooks(books);
+
+        selectionSort(books);
+
+        System.out.println("\n--- After Sorting (by Accession Number) ---");
+        displayBooks(books);
+    }
+}
+
+
+OUTPUT:
+--- Before Sorting ---
+AccessionNo  Title                          Author               Year  
+508          Data Structures                Hamza                2019  
+203          Java Programming               Fatima               2020  
+715          Operating Systems              Ahmed                2018  
+102          Database Systems               Ayesha               2021  
+410          Computer Networks              Bilal                2017  
+601          Software Engineering           Zainab               2022  
+307          Digital Logic                  Usman                2016  
+150          Discrete Mathematics           Mariam               2023  
+
+--- After Sorting (by Accession Number) ---
+AccessionNo  Title                          Author               Year  
+102          Database Systems               Ayesha               2021  
+150          Discrete Mathematics           Mariam               2023  
+203          Java Programming               Fatima               2020  
+307          Digital Logic                  Usman                2016  
+410          Computer Networks              Bilal                2017  
+508          Data Structures                Hamza                2019  
+601          Software Engineering           Zainab               2022  
+715          Operating Systems              Ahmed                2018  
+
