@@ -1,0 +1,282 @@
+Object #6. Write a Java program by using OOP concepts like class, object, encapsulation and inheritance to produce complete solution, and expected output for the Employment Management System. It include two types of Employee, FullTimeEmployee and PartTimeEmployee. 
+
+PROGRAM:
+// ===================== Base Class (Encapsulation + Inheritance) =====================
+
+class Employee {
+    private int id;
+    private String name;
+    private String department;
+
+    Employee(int id, String name, String department) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+    }
+
+    int getId() {
+        return id;
+    }
+
+    String getName() {
+        return name;
+    }
+
+    String getDepartment() {
+        return department;
+    }
+
+    double calculateSalary() {
+        return 0.0;
+    }
+
+    String getType() {
+        return "Employee";
+    }
+
+    void displayInfo() {
+        System.out.println("ID         : " + id);
+        System.out.println("Name       : " + name);
+        System.out.println("Department : " + department);
+        System.out.println("Type       : " + getType());
+        System.out.printf("Salary     : %.2f%n", calculateSalary());
+    }
+}
+
+// ===================== FullTimeEmployee (Inheritance) =====================
+
+class FullTimeEmployee extends Employee {
+    private double monthlySalary;
+    private double bonus;
+
+    FullTimeEmployee(int id, String name, String department, double monthlySalary, double bonus) {
+        super(id, name, department);
+        this.monthlySalary = monthlySalary;
+        this.bonus = bonus;
+    }
+
+    double getMonthlySalary() {
+        return monthlySalary;
+    }
+
+    double getBonus() {
+        return bonus;
+    }
+
+    double calculateSalary() {
+        return monthlySalary + bonus;
+    }
+
+    String getType() {
+        return "Full-Time";
+    }
+
+    void displayInfo() {
+        super.displayInfo();
+        System.out.println("Base Salary: " + monthlySalary);
+        System.out.println("Bonus      : " + bonus);
+    }
+}
+
+// ===================== PartTimeEmployee (Inheritance) =====================
+
+class PartTimeEmployee extends Employee {
+    private double hourlyRate;
+    private int hoursWorked;
+
+    PartTimeEmployee(int id, String name, String department, double hourlyRate, int hoursWorked) {
+        super(id, name, department);
+        this.hourlyRate = hourlyRate;
+        this.hoursWorked = hoursWorked;
+    }
+
+    double getHourlyRate() {
+        return hourlyRate;
+    }
+
+    int getHoursWorked() {
+        return hoursWorked;
+    }
+
+    double calculateSalary() {
+        return hourlyRate * hoursWorked;
+    }
+
+    String getType() {
+        return "Part-Time";
+    }
+
+    void displayInfo() {
+        super.displayInfo();
+        System.out.println("Hourly Rate: " + hourlyRate);
+        System.out.println("Hours Worked: " + hoursWorked);
+    }
+}
+
+// ===================== Main Class =====================
+
+public class EmploymentManagement {
+
+    public static void main(String[] args) {
+
+        System.out.println("=============================================");
+        System.out.println("       EMPLOYMENT MANAGEMENT SYSTEM");
+        System.out.println("=============================================");
+
+        // Creating objects
+        Employee[] employees = {
+            new FullTimeEmployee(101, "Ahmed",  "IT",      85000, 15000),
+            new FullTimeEmployee(102, "Fatima", "Finance", 75000, 10000),
+            new FullTimeEmployee(103, "Bilal",  "HR",      70000, 12000),
+            new PartTimeEmployee(201, "Zainab", "IT",      500,   120),
+            new PartTimeEmployee(202, "Hamza",  "Marketing", 450, 100),
+            new PartTimeEmployee(203, "Ayesha", "Support",  400,  90)
+        };
+
+        // Display all employee details
+        System.out.println("\n--- Employee Details ---");
+        for (Employee emp : employees) {
+            System.out.println("-----------------------------------------");
+            emp.displayInfo();
+        }
+        System.out.println("-----------------------------------------");
+
+        // Summary Table
+        System.out.println("\n--- Salary Summary ---");
+        System.out.printf("%-5s %-12s %-12s %-12s %12s%n", "ID", "Name", "Department", "Type", "Salary");
+        System.out.println("-------------------------------------------------------------");
+
+        double totalSalary = 0;
+        double fullTimeTotal = 0;
+        double partTimeTotal = 0;
+        int fullTimeCount = 0;
+        int partTimeCount = 0;
+
+        for (Employee emp : employees) {
+            double salary = emp.calculateSalary();
+            totalSalary += salary;
+
+            if (emp instanceof FullTimeEmployee) {
+                fullTimeTotal += salary;
+                fullTimeCount++;
+            } else if (emp instanceof PartTimeEmployee) {
+                partTimeTotal += salary;
+                partTimeCount++;
+            }
+
+            System.out.printf("%-5d %-12s %-12s %-12s %12.2f%n",
+                    emp.getId(), emp.getName(), emp.getDepartment(), emp.getType(), salary);
+        }
+
+        System.out.println("-------------------------------------------------------------");
+        System.out.printf("%-41s %12.2f%n", "Total Salary Expense", totalSalary);
+
+        // Statistics
+        System.out.println("\n--- Statistics ---");
+        System.out.println("Total Employees     : " + employees.length);
+        System.out.println("Full-Time Employees : " + fullTimeCount);
+        System.out.println("Part-Time Employees : " + partTimeCount);
+        System.out.printf("Full-Time Total Pay : %.2f%n", fullTimeTotal);
+        System.out.printf("Part-Time Total Pay : %.2f%n", partTimeTotal);
+        System.out.printf("Average Salary      : %.2f%n", totalSalary / employees.length);
+
+        // Find highest paid employee (Polymorphism)
+        Employee highest = employees[0];
+        for (Employee emp : employees) {
+            if (emp.calculateSalary() > highest.calculateSalary()) {
+                highest = emp;
+            }
+        }
+
+        System.out.println("\n--- Highest Paid Employee ---");
+        highest.displayInfo();
+
+    }
+}
+
+OUTPUT:
+=============================================
+       EMPLOYMENT MANAGEMENT SYSTEM
+=============================================
+
+--- Employee Details ---
+-----------------------------------------
+ID         : 101
+Name       : Ahmed
+Department : IT
+Type       : Full-Time
+Salary     : 100000.00
+Base Salary: 85000.0
+Bonus      : 15000.0
+-----------------------------------------
+ID         : 102
+Name       : Fatima
+Department : Finance
+Type       : Full-Time
+Salary     : 85000.00
+Base Salary: 75000.0
+Bonus      : 10000.0
+-----------------------------------------
+ID         : 103
+Name       : Bilal
+Department : HR
+Type       : Full-Time
+Salary     : 82000.00
+Base Salary: 70000.0
+Bonus      : 12000.0
+-----------------------------------------
+ID         : 201
+Name       : Zainab
+Department : IT
+Type       : Part-Time
+Salary     : 60000.00
+Hourly Rate: 500.0
+Hours Worked: 120
+-----------------------------------------
+ID         : 202
+Name       : Hamza
+Department : Marketing
+Type       : Part-Time
+Salary     : 45000.00
+Hourly Rate: 450.0
+Hours Worked: 100
+-----------------------------------------
+ID         : 203
+Name       : Ayesha
+Department : Support
+Type       : Part-Time
+Salary     : 36000.00
+Hourly Rate: 400.0
+Hours Worked: 90
+-----------------------------------------
+
+--- Salary Summary ---
+ID    Name         Department   Type             Salary
+-------------------------------------------------------------
+101   Ahmed        IT           Full-Time     100000.00
+102   Fatima       Finance      Full-Time      85000.00
+103   Bilal        HR           Full-Time      82000.00
+201   Zainab       IT           Part-Time      60000.00
+202   Hamza        Marketing    Part-Time      45000.00
+203   Ayesha       Support      Part-Time      36000.00
+-------------------------------------------------------------
+Total Salary Expense                          408000.00
+
+--- Statistics ---
+Total Employees     : 6
+Full-Time Employees : 3
+Part-Time Employees : 3
+Full-Time Total Pay : 267000.00
+Part-Time Total Pay : 141000.00
+Average Salary      : 68000.00
+
+--- Highest Paid Employee ---
+ID         : 101
+Name       : Ahmed
+Department : IT
+Type       : Full-Time
+Salary     : 100000.00
+Base Salary: 85000.0
+Bonus      : 15000.0
+
+
