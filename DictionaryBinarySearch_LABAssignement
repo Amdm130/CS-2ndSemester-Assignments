@@ -1,0 +1,118 @@
+Object 4. binary search for dictionary word, search by a word alphabetically 
+
+PROGRAM:
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class DictionaryBinarySearch {
+
+    static class Word {
+        String word;
+        String meaning;
+        String partOfSpeech;
+
+        Word(String word, String meaning, String partOfSpeech) {
+            this.word = word;
+            this.meaning = meaning;
+            this.partOfSpeech = partOfSpeech;
+        }
+    }
+
+    static int binarySearch(List<Word> dictionary, String target) {
+        int low = 0;
+        int high = dictionary.size() - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            int comparison = dictionary.get(mid).word.compareToIgnoreCase(target);
+
+            if (comparison == 0) {
+                return mid;
+            } else if (comparison < 0) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    static void displayDictionary(List<Word> dictionary) {
+        System.out.printf("%-5s %-15s %-12s %s%n", "No.", "Word", "Type", "Meaning");
+        int i = 1;
+        for (Word w : dictionary) {
+            System.out.printf("%-5d %-15s %-12s %s%n", i++, w.word, w.partOfSpeech, w.meaning);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        // Words already sorted alphabetically (required for binary search)
+        List<Word> dictionary = new ArrayList<>();
+        dictionary.add(new Word("Algorithm",  "A step-by-step procedure to solve a problem",  "Noun"));
+        dictionary.add(new Word("Binary",     "Relating to a system of two",                  "Adjective"));
+        dictionary.add(new Word("Compile",    "To convert source code into machine code",      "Verb"));
+        dictionary.add(new Word("Database",   "An organized collection of data",               "Noun"));
+        dictionary.add(new Word("Encrypt",    "To convert data into a coded form",             "Verb"));
+        dictionary.add(new Word("Function",   "A block of code that performs a task",           "Noun"));
+        dictionary.add(new Word("Gateway",    "A network point that acts as an entrance",       "Noun"));
+        dictionary.add(new Word("Hardware",   "Physical components of a computer",              "Noun"));
+        dictionary.add(new Word("Iterate",    "To repeat a process",                            "Verb"));
+        dictionary.add(new Word("Java",       "A high-level programming language",              "Noun"));
+        dictionary.add(new Word("Kernel",     "The core part of an operating system",           "Noun"));
+        dictionary.add(new Word("Loop",       "A sequence that repeats until a condition",      "Noun"));
+        dictionary.add(new Word("Module",     "A self-contained unit of code",                  "Noun"));
+        dictionary.add(new Word("Network",    "A group of connected computers",                 "Noun"));
+        dictionary.add(new Word("Object",     "An instance of a class",                         "Noun"));
+
+        System.out.println("--- Dictionary (Sorted Alphabetically) ---");
+        displayDictionary(dictionary);
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nEnter a word to search: ");
+        String target = scanner.nextLine().trim();
+
+        int index = binarySearch(dictionary, target);
+
+        if (index != -1) {
+            Word w = dictionary.get(index);
+            System.out.println("\nWord Found at index " + index);
+            System.out.println("Word    : " + w.word);
+            System.out.println("Type    : " + w.partOfSpeech);
+            System.out.println("Meaning : " + w.meaning);
+        } else {
+            System.out.println("\nWord \"" + target + "\" Not Found in dictionary.");
+        }
+
+        scanner.close();
+    }
+}
+
+OUTPUT:
+--- Dictionary (Sorted Alphabetically) ---
+No.   Word            Type         Meaning
+1     Algorithm       Noun         A step-by-step procedure to solve a problem
+2     Binary          Adjective    Relating to a system of two
+3     Compile         Verb         To convert source code into machine code
+4     Database        Noun         An organized collection of data
+5     Encrypt         Verb         To convert data into a coded form
+6     Function        Noun         A block of code that performs a task
+7     Gateway         Noun         A network point that acts as an entrance
+8     Hardware        Noun         Physical components of a computer
+9     Iterate         Verb         To repeat a process
+10    Java            Noun         A high-level programming language
+11    Kernel          Noun         The core part of an operating system
+12    Loop            Noun         A sequence that repeats until a condition
+13    Module          Noun         A self-contained unit of code
+14    Network         Noun         A group of connected computers
+15    Object          Noun         An instance of a class
+
+Enter a word to search: Object
+
+Word Found at index 14
+Word    : Object
+Type    : Noun
+Meaning : An instance of a class
+
+
