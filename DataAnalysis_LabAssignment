@@ -1,0 +1,245 @@
+Object #1. Read the data from CSV file (Population.csv, Sales.csv) and perform the mathematical operations for example calculate percentage of total population and the name of the country which has the largest population. For Sales.csv file, find out the name of product the which is largest sold with region and amount. Files can be designed and data may be assumed by the user.
+
+PROGRAM:
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+public class DataAnalysis {
+    public record PopulationRecord(String country, long population) {}
+    public record SalesRecord(String product, String region, int unitsSold, double unitPrice, double totalAmount) {}
+
+    public static void main(String[] args) {
+        File populationFile = new File("Population.csv");
+        File salesFile = new File("Sales.csv");
+
+        processPopulationData(populationFile);
+        System.out.println("\n" + "=".repeat(80) + "\n");
+        processSalesData(salesFile);
+    }
+
+    // --- POPULATION ANALYSIS ---
+    public static void processPopulationData(File file) {
+        System.out.println(" 1. POPULATION DATA ANALYSIS (" + file.getName() + ")");
+        System.out.println("-".repeat(70));
+
+        List<PopulationRecord> records = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            br.readLine(); // skip header
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+                String[] parts = line.split(",");
+                records.add(new PopulationRecord(parts[0].trim(), Long.parseLong(parts[1].trim())));
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading " + file.getName() + ": " + e.getMessage());
+            return;
+        }
+
+        //Total population & max population
+        long totalPopulation = 0;
+        PopulationRecord largestCountry = records.get(0);
+
+        for (PopulationRecord record : records) {
+            totalPopulation += record.population();
+            if (record.population() > largestCountry.population()) {
+                largestCountry = record;
+            }
+        }
+
+        // Display Country Table with % calculation
+        System.out.printf("%-5s | %-25s | %18s | %15s%n", "No.", "Country", "Population", "Share (%)");
+        System.out.println("-".repeat(70));
+
+        int index = 1;
+        for (PopulationRecord record : records) {
+            // Formula: (Country Population / Total Population) * 100
+            double percentage = ((double) record.population() / totalPopulation) * 100.0;
+            System.out.printf("%-5d | %-25s | %,18d | %14.2f%%%n",
+                    index++, record.country(), record.population(), percentage);
+        }
+
+        System.out.println("-".repeat(70));
+        System.out.printf("%-5s | %-25s | %,18d | %14.2f%%%n", "TOTAL", "All Sample Countries", totalPopulation, 100.0);
+        System.out.println("-".repeat(70));
+
+        double largestPercentage = ((double) largestCountry.population() / totalPopulation) * 100.0;
+        System.out.println("\nPOPULATION SUMMARY");
+        System.out.printf("  - Total Combined Population : %,d%n", totalPopulation);
+        System.out.printf("  - Country with Largest Pop  : %s%n", largestCountry.country());
+        System.out.printf("  - Largest Population Count  : %,d citizens%n", largestCountry.population());
+        System.out.printf("  - Percentage of Total World : %.2f%%%n", largestPercentage);
+    }
+
+    // --- SALES ANALYSIS ---
+    public static void processSalesData(File file) {
+        System.out.println(" 2. SALES DATA ANALYSIS (" + file.getName() + ")");
+        System.out.println("-".repeat(73));
+
+        List<SalesRecord> salesList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            br.readLine(); // skip header
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+                String[] parts = line.split(",");
+                salesList.add(new SalesRecord(
+                        parts[0].trim(),
+                        parts[1].trim(),
+                        Integer.parseInt(parts[2].trim()),
+                        Double.parseDouble(parts[3].trim()),
+                        Double.parseDouble(parts[4].trim())
+                ));
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading " + file.getName() + ": " + e.getMessage());
+            return;
+        }
+
+        // Print Transaction Table
+        System.out.printf("%-15s | %-10s | %10s | %12s | %15s%n",
+                "Product", "Region", "Units Sold", "Unit Price", "Total Amount ($)");
+        System.out.println("-".repeat(73));
+
+        double grandTotalRevenue = 0.0;
+        int grandTotalUnits = 0;
+        SalesRecord highestSingleSale = salesList.get(0);
+
+        for (SalesRecord s : salesList) {
+            grandTotalRevenue += s.totalAmount();
+            grandTotalUnits += s.unitsSold();
+            System.out.printf("%-15s | %-10s | %,10d | $%,11.2f | $%,14.2f%n",
+                    s.product(), s.region(), s.unitsSold(), s.unitPrice(), s.totalAmount());
+
+            if (s.totalAmount() > highestSingleSale.totalAmount()) {
+                highestSingleSale = s;
+            }
+        }
+
+        System.out.println("-".repeat(73));
+        System.out.printf("%-15s | %-10s | %,10d | %12s | $%,14.2f%n",
+                "TOTAL", "All Regions", grandTotalUnits, "-", grandTotalRevenue);
+        System.out.println("-".repeat(73));
+
+        // Group Aggregations by Product
+        Map<String, Integer> productUnitsMap = new HashMap<>();
+        Map<String, Double> productRevenueMap = new HashMap<>();
+        Map<String, List<SalesRecord>> productRegionRecords = new HashMap<>();
+
+        for (SalesRecord s : salesList) {
+            productUnitsMap.put(s.product(), productUnitsMap.getOrDefault(s.product(), 0) + s.unitsSold());
+            productRevenueMap.put(s.product(), productRevenueMap.getOrDefault(s.product(), 0.0) + s.totalAmount());
+            productRegionRecords.computeIfAbsent(s.product(), k -> new ArrayList<>()).add(s);
+        }
+
+        // Find top product by revenue
+        String topProductByRevenue = Collections.max(
+                productRevenueMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        // Find top product by units
+        String topProductByUnits = Collections.max(
+                productUnitsMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        // Print Insights
+        System.out.println("\nSALES SUMMARY & INSIGHTS");
+
+        System.out.println("\n1. LARGEST SOLD PRODUCT BY TOTAL REVENUE (AMOUNT):");
+        System.out.printf("   Product Name : %s%n", topProductByRevenue);
+        System.out.printf("   Total Revenue: $%,.2f (%d units total)%n",
+                productRevenueMap.get(topProductByRevenue), productUnitsMap.get(topProductByRevenue));
+        System.out.println("   Breakdown by Region:");
+        for (SalesRecord record : productRegionRecords.get(topProductByRevenue)) {
+            System.out.printf("     - Region: %-8s | Units: %,4d | Amount: $%,11.2f%n",
+                    record.region(), record.unitsSold(), record.totalAmount());
+        }
+
+        System.out.println("\n2. LARGEST SOLD PRODUCT BY QUANTITY (UNITS):");
+        System.out.printf("   Product Name : %s%n", topProductByUnits);
+        System.out.printf("   Total Units  : %,d units (Total Amount: $%,.2f)%n",
+                productUnitsMap.get(topProductByUnits), productRevenueMap.get(topProductByUnits));
+
+        System.out.println("\n3. LARGEST INDIVIDUAL SALE TRANSACTION:");
+        System.out.printf("   Product Name : %s%n", highestSingleSale.product());
+        System.out.printf("   Region       : %s%n", highestSingleSale.region());
+        System.out.printf("   Units Sold   : %,d%n", highestSingleSale.unitsSold());
+        System.out.printf("   Total Amount : $%,.2f%n", highestSingleSale.totalAmount());
+    }
+}
+
+OUTPUT:
+ 1. POPULATION DATA ANALYSIS (Population.csv)
+----------------------------------------------------------------------
+No.   | Country                   |         Population |       Share (%)
+----------------------------------------------------------------------
+1     | India                     |      1,428,627,663 |          28.00%
+2     | China                     |      1,425,671,352 |          27.94%
+3     | United States             |        339,996,563 |           6.66%
+4     | Indonesia                 |        277,534,122 |           5.44%
+5     | Pakistan                  |        240,485,658 |           4.71%
+6     | Nigeria                   |        223,804,632 |           4.39%
+7     | Brazil                    |        216,422,446 |           4.24%
+8     | Bangladesh                |        172,954,319 |           3.39%
+9     | Russia                    |        144,444,359 |           2.83%
+10    | Mexico                    |        128,455,567 |           2.52%
+11    | Japan                     |        123,294,513 |           2.42%
+12    | Philippines               |        117,337,368 |           2.30%
+13    | Egypt                     |        112,716,598 |           2.21%
+14    | Germany                   |         83,294,633 |           1.63%
+15    | United Kingdom            |         67,736,802 |           1.33%
+----------------------------------------------------------------------
+TOTAL | All Sample Countries      |      5,102,776,595 |         100.00%
+----------------------------------------------------------------------
+
+POPULATION SUMMARY
+  - Total Combined Population : 5,102,776,595
+  - Country with Largest Pop  : India
+  - Largest Population Count  : 1,428,627,663 citizens
+  - Percentage of Total World : 28.00%
+
+================================================================================
+
+ 2. SALES DATA ANALYSIS (Sales.csv)
+-------------------------------------------------------------------------
+Product         | Region     | Units Sold |   Unit Price | Total Amount ($)
+-------------------------------------------------------------------------
+Laptop          | North      |        120 | $     899.99 | $    107,998.80
+Smartphone      | West       |        350 | $     699.50 | $    244,825.00
+Headphones      | East       |        450 | $      79.99 | $     35,995.50
+Smartwatch      | South      |        210 | $     199.99 | $     41,997.90
+Tablet          | North      |        180 | $     450.00 | $     81,000.00
+Laptop          | West       |        150 | $     899.99 | $    134,998.50
+Smartphone      | North      |        420 | $     699.50 | $    293,790.00
+Monitor         | East       |        280 | $     249.99 | $     69,997.20
+Smartphone      | South      |        390 | $     699.50 | $    272,805.00
+Headphones      | West       |        510 | $      79.99 | $     40,794.90
+Keyboard        | South      |        320 | $      49.99 | $     15,996.80
+Laptop          | East       |         95 | $     899.99 | $     85,499.05
+-------------------------------------------------------------------------
+TOTAL           | All Regions |      3,475 |            - | $  1,425,698.65
+-------------------------------------------------------------------------
+
+SALES SUMMARY & INSIGHTS
+
+1. LARGEST SOLD PRODUCT BY TOTAL REVENUE (AMOUNT):
+   Product Name : Smartphone
+   Total Revenue: $811,420.00 (1160 units total)
+   Breakdown by Region:
+     - Region: West     | Units:  350 | Amount: $ 244,825.00
+     - Region: North    | Units:  420 | Amount: $ 293,790.00
+     - Region: South    | Units:  390 | Amount: $ 272,805.00
+
+2. LARGEST SOLD PRODUCT BY QUANTITY (UNITS):
+   Product Name : Smartphone
+   Total Units  : 1,160 units (Total Amount: $811,420.00)
+
+3. LARGEST INDIVIDUAL SALE TRANSACTION:
+   Product Name : Smartphone
+   Region       : North
+   Units Sold   : 420
+   Total Amount : $293,790.00
