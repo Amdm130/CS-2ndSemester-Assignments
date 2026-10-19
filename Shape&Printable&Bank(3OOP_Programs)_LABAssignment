@@ -1,0 +1,258 @@
+Object 5. Write a Java program with full solutions and output of the following Objects covering abstract classes, interfaces and polymorphism by using OOP.
+ 1. Shape Area Calculator. Create an abstract class Shape with method calculateArea(). Implement two classes: Circle and Rectangle that inherit from Shape.
+
+2. Create an interface Printable with method print( ). Implement it in two classes: Book and Magazine. 
+
+3. Create a class Bank account with methods deposit( ) and withdrawal( ). Extend it with SavingAccount and CheckingAccount. Use polymorphism and encapsulation to manage different account types.
+
+PROGRAM:
+import java.util.*;
+
+// ===================== PART 1: SHAPE AREA CALCULATOR =====================
+
+abstract class Shape {
+    abstract double calculateArea();
+    abstract String getName();
+}
+class Circle extends Shape {
+    double radius;
+    Circle(double radius) {
+        this.radius = radius;
+    }
+    double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+    String getName() {
+        return "Circle (radius=" + radius + ")";
+    }
+}
+class Rectangle extends Shape {
+    double length, width;
+    Rectangle(double length, double width) {
+        this.length = length;
+        this.width = width;
+    }
+    double calculateArea() {
+        return length * width;
+    }
+    String getName() {
+        return "Rectangle (" + length + " x " + width + ")";
+    }
+}
+// ===================== PART 2: PRINTABLE INTERFACE =====================
+interface Printable {
+    void print();
+}
+
+class Book implements Printable {
+    String title;
+    String author;
+    int pages;
+    Book(String title, String author, int pages) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+    }
+    public void print() {
+        System.out.println("Book     -> Title: " + title + ", Author: " + author + ", Pages: " + pages);
+    }
+}
+class Magazine implements Printable {
+    String name;
+    String issue;
+    String month;
+    Magazine(String name, String issue, String month) {
+        this.name = name;
+        this.issue = issue;
+        this.month = month;
+    }
+    public void print() {
+        System.out.println("Magazine -> Name: " + name + ", Issue: " + issue + ", Month: " + month);
+    }
+}
+// ===================== PART 3: BANK ACCOUNT =====================
+class BankAccount {
+    private String owner;
+    private double balance;
+    BankAccount(String owner, double balance) {
+        this.owner = owner;
+        this.balance = balance;
+    }
+    String getOwner() {
+        return owner;
+    }
+    double getBalance() {
+        return balance;
+    }
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println(owner + " deposited " + amount + ". Balance: " + balance);
+        } else {
+            System.out.println("Invalid deposit amount.");
+        }
+    }
+    void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println(owner + " withdrew " + amount + ". Balance: " + balance);
+        } else {
+            System.out.println("Insufficient balance or invalid amount.");
+        }
+    }
+    void displayInfo() {
+        System.out.println("Owner: " + owner + ", Balance: " + balance);
+    }
+}
+class SavingAccount extends BankAccount {
+    private double interestRate;
+    SavingAccount(String owner, double balance, double interestRate) {
+        super(owner, balance);
+        this.interestRate = interestRate;
+    }
+    void addInterest() {
+        double interest = getBalance() * interestRate / 100;
+        deposit(interest);
+        System.out.println("  Interest added at " + interestRate + "%");
+    }
+    void displayInfo() {
+        System.out.print("[Saving Account] ");
+        super.displayInfo();
+    }
+}
+class CheckingAccount extends BankAccount {
+    private double overdraftLimit;
+    CheckingAccount(String owner, double balance, double overdraftLimit) {
+        super(owner, balance);
+        this.overdraftLimit = overdraftLimit;
+    }
+    void withdraw(double amount) {
+        if (amount > 0 && amount <= getBalance() + overdraftLimit) {
+            if (amount <= getBalance()) {
+                super.withdraw(amount);
+            } else {
+                double overdraftUsed = amount - getBalance();
+                super.withdraw(getBalance());
+                System.out.println("  Overdraft used: " + overdraftUsed + " (Limit: " + overdraftLimit + ")");
+            }
+        } else {
+            System.out.println("Exceeds overdraft limit.");
+        }
+    }
+
+    void displayInfo() {
+        System.out.print("[Checking Account] ");
+        super.displayInfo();
+        System.out.println("  Overdraft Limit: " + overdraftLimit);
+    }
+}
+public class OOP {
+
+    public static void main(String[] args) {
+
+        System.out.println("========================================");
+        System.out.println("Shape Area Calculator");
+        System.out.println("========================================");
+
+        Shape[] shapes = {
+            new Circle(5.0),
+            new Circle(3.5),
+            new Rectangle(10, 6),
+            new Rectangle(7.5, 4.2)
+        };
+
+        System.out.printf("%-30s %15s%n", "Shape", "Area");
+        for (Shape s : shapes) {
+            System.out.printf("%-30s %15.2f%n", s.getName(), s.calculateArea());
+        }
+        System.out.println("\n========================================");
+        System.out.println("  PART 2: Printable Interface");
+        System.out.println("========================================");
+
+        Printable[] items = {
+            new Book("Java Programming", "Bilal", 450),
+            new Book("Data Structures", "Ayesha", 380),
+            new Magazine("Tech Today", "Vol 12", "October"),
+            new Magazine("Code Weekly", "Vol 5", "September")
+        };
+
+        for (Printable item : items) {
+            item.print();
+        }
+        System.out.println("\n========================================");
+        System.out.println("  PART 3: Bank Account");
+        System.out.println("========================================");
+
+        SavingAccount saving = new SavingAccount("Ahmed", 50000, 5.0);
+        CheckingAccount checking = new CheckingAccount("Fatima", 30000, 10000);
+
+        System.out.println("\n--- Initial Account Info ---");
+        saving.displayInfo();
+        checking.displayInfo();
+
+        System.out.println("\n--- Transactions (Polymorphism) ---");
+        BankAccount[] accounts = {saving, checking};
+        for (BankAccount acc : accounts) {
+            acc.deposit(5000);
+            acc.withdraw(10000);
+        }
+
+        System.out.println("\n--- Adding Interest to Saving Account ---");
+        saving.addInterest();
+
+        System.out.println("\n--- Overdraft Withdrawal from Checking ---");
+        checking.withdraw(30000);
+
+        System.out.println("\n--- Final Account Info ---");
+        saving.displayInfo();
+        checking.displayInfo();
+    }
+}
+
+OUTPUT:
+========================================
+  PART 1: Shape Area Calculator
+========================================
+Shape                                   Area
+Circle (radius=5.0)                    78.54
+Circle (radius=3.5)                    38.48
+Rectangle (10.0 x 6.0)                60.00
+Rectangle (7.5 x 4.2)                 31.50
+
+========================================
+  PART 2: Printable Interface
+========================================
+Book     -> Title: Java Programming, Author: Bilal, Pages: 450
+Book     -> Title: Data Structures, Author: Ayesha, Pages: 380
+Magazine -> Name: Tech Today, Issue: Vol 12, Month: October
+Magazine -> Name: Code Weekly, Issue: Vol 5, Month: September
+
+========================================
+  PART 3: Bank Account
+========================================
+
+--- Initial Account Info ---
+[Saving Account] Owner: Ahmed, Balance: 50000.0
+[Checking Account] Owner: Fatima, Balance: 30000.0
+  Overdraft Limit: 10000.0
+
+--- Transactions (Polymorphism) ---
+Ahmed deposited 5000.0. Balance: 55000.0
+Ahmed withdrew 10000.0. Balance: 45000.0
+Fatima deposited 5000.0. Balance: 35000.0
+Fatima withdrew 10000.0. Balance: 25000.0
+
+--- Adding Interest to Saving Account ---
+Ahmed deposited 2250.0. Balance: 47250.0
+  Interest added at 5.0%
+
+--- Overdraft Withdrawal from Checking ---
+Fatima withdrew 25000.0. Balance: 0.0
+  Overdraft used: 5000.0 (Limit: 10000.0)
+
+--- Final Account Info ---
+[Saving Account] Owner: Ahmed, Balance: 47250.0
+[Checking Account] Owner: Fatima, Balance: 0.0
+  Overdraft Limit: 10000.0
+
+
